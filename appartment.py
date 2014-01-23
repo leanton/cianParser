@@ -1,4 +1,5 @@
-#! UTF-8 format
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 import re
 
 class Appartment(object):
@@ -44,21 +45,52 @@ class Appartment(object):
 	# Setter methods
 
 	def setAddress(self, address):
-		if (type(address) is str):
+		if type(address) is str or unicode:
 			self.address = address
 		else:
 			print "Can't set proper address, type is not string"
 			self.address = None
 
 	def setMetro(self, metro):
-		if (type(metro) is str):
+		if type(metro) is str or unicode:
 			self.metro = metro
 		else:
 			print "Can't set metro, type is not string"
 			self.metro = None
 
 	def setTransportation(self, transportation):
-		if (type(transportation) is dict):
+		if type(transportation) is dict:
 			self.transportation = transportation
-		elif (type(transportation) is str):
+		elif type(transportation) is str or unicode:
+			time = re.search(u'\d+', transportation)
+			auto = re.search(u'авто', transportation)
+			foot = re.search(u'пешком', transportation)
+			if time and auto:
+				time = int(time.group())
+				d = {}
+				d['auto'] = time
+				self.transportation = d
+			elif time and foot:
+				time = int(time.group())
+				d = {}
+				d['foot'] = time
+				self.transportation = d
+			else:
+				self.transportation = None
 
+	def setRooms(self, rooms):
+		if type(rooms) is int:
+			self.rooms = rooms
+		elif type(rooms) is str or unicode:
+			room = re.search(u'\d', rooms)
+			if room:
+				room = int(room.group())
+				self.rooms = room
+			else:
+				print "error, no match"
+				self.rooms = None
+		else:
+			print "type error, current type is " + type(rooms)
+
+	def setSpace(self, space):
+		pass
