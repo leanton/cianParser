@@ -10,12 +10,20 @@ from socket import timeout
 from bs4 import BeautifulSoup
 
 '''Global variables of the links'''
+
+'''For rent URLs'''
 HREF1 = 'http://www.cian.ru/cat.php?deal_type=1&obl_id=1&type=4&room1=1&p={}'
 HREF2 = 'http://www.cian.ru/cat.php?deal_type=1&obl_id=1&type=4&room2=1&p={}'
 HREF3 = 'http://www.cian.ru/cat.php?deal_type=1&obl_id=1&type=4&room3=1&p={}'
 HREF4 = 'http://www.cian.ru/cat.php?deal_type=1&obl_id=1&type=4&room4=1&p={}'
 HREF5 = 'http://www.cian.ru/cat.php?deal_type=1&obl_id=1&type=4&room4=1&p={}'
 HREF6 = 'http://www.cian.ru/cat.php?deal_type=1&obl_id=1&type=4&room4=1&p={}'
+
+'''For sell URLs'''
+S_HREF1 = 'http://www.cian.ru/cat.php?deal_type=2&obl_id=1&room1=1&p={}'
+S_HREF2 = 'http://www.cian.ru/cat.php?deal_type=2&obl_id=1&room2=1&p={}'
+S_HREF3 = 'http://www.cian.ru/cat.php?deal_type=2&obl_id=1&room3=1&p={}'
+S_HREF4 = 'http://www.cian.ru/cat.php?deal_type=2&obl_id=1&room4=1&p={}'
 
 
 def loadHelper(uri):
@@ -24,7 +32,11 @@ def loadHelper(uri):
 	try:
 		thing = opener.open(uri, None, 10)
 		soup = BeautifulSoup(thing.read(), "lxml")
-		return soup
+		if not (soup is None):
+			return soup
+		else:
+			print "soup is None"
+			loadHelper(uri)
 	except (timeout, urllib2.HTTPError, urllib2.URLError) as error:
 		sys.stdout.write("{} encountered, hold on, bro".format(error))
 		sys.stdout.flush()
@@ -122,7 +134,7 @@ def parsePage(pageNum):
 	return data_table
 
 
-def export(data, filename = "foo.txt"):
+def export(data, filename="foo.txt"):
 	f = codecs.open(filename, 'w+', 'utf-8')
 	for row in data:
 		for cell in row:
@@ -130,12 +142,21 @@ def export(data, filename = "foo.txt"):
 			f.write(u'	')
 		f.write(u'\n')
 
-def getTable(pageNum, URL = HREF1):
+def getTable(pageNum, URL=HREF1):
 	uri = URL.format(pageNum)
-	soup = loadHelper(uri)
-	#print(soup.prettify())
-	table = soup.find_all('tr', id=re.compile('tr_(\d+)'))
-	return table
+	try:
+		soup = loadHelper(uri)
+		#print(soup.prettify())
+		table = soup.find_all('tr', id=re.compile('tr_(\d+)'))
+		if not (table is None):
+			return table
+		else:
+			print "table is None"
+			getTable(pageNum, URL)
+	except AttributeError:
+		print "AttributeError raised exception"
+		getTable(pageNum, URL)
+
 
 def parseTable(table):
 	data_table = []
@@ -222,14 +243,14 @@ def parseTable(table):
 	return data_table
 
 if __name__ == "__main__":
-	url = HREF6
+	url = S_HREF4
 	page_start = int(sys.argv[1])
 	page_end = int(sys.argv[2]) + 1
 	for page_num in range(page_start,page_end):
 		table = getTable(page_num, url)
 		while (table == []):
-			table = getTable(page_num, url)
 			time.sleep(2)
+			table = getTable(page_num, url)
 		data = parseTable(table)
 		export(data, str(page_num) + '_data.txt')
 		sys.stdout.write(" #{} page is parsed".format(page_num))
