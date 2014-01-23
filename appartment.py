@@ -91,6 +91,72 @@ class Appartment(object):
 				self.rooms = None
 		else:
 			print "type error, current type is " + type(rooms)
+			self.rooms = None
 
 	def setSpace(self, space):
-		pass
+		if type(space) is dict:
+			self.space = space
+		elif type(space) is list:
+			d = {}
+			for typo in space:
+				if re.search(u'кухня', typo):
+					area = re.search(u'\d+', typo)
+					area = int(area.group())
+					d['kitchen'] = area
+				elif re.search(u'жилая', typo):
+					area = re.search(u'\d+', typo)
+					area = int(area.group())
+					d['dwelling'] = area
+				elif re.search(u'общая', typo):
+					area = re.search(u'\d+', typo)
+					area = int(area.group())
+					d['full'] = area
+				elif typo == NULL:
+					pass
+				else:
+					print "Error, no matching typo's. Current typo is " + typo
+		else:
+			print "Error with setting space"
+			self.space = None
+
+	def setPrice(self, price):
+		if type(price) is int or float:
+			self.price = int(price)
+		elif type(price) is str or unicode:
+			price.replace(",", "")
+			price = re.search(u'\d+', price)
+			if price:
+				self.price = int(price.group())
+			else:
+				print "No match of price in string"
+				self.price = None
+		else:
+			print "Type error, current type is " + type(price)
+			self.price = None
+
+	def setFloor(self, floor):
+		if type(floor) is tuple:
+			self.floor = floor
+		elif type(floor) is str or unicode:
+			floor = floor.split("/")
+			if len(floor) == 2:	
+				floor = (int(floor[0]), int(floor[1]))
+				self.floor = floor
+			else:
+				print "length of floor array is not 2, len = " + len(floor)
+				self.floor = None
+		else:
+			print "Type error, current type is " + type(floor)
+			self.floor = None
+
+	def setAddInfo(self, addInfo):
+		if type(addInfo) is list:
+			self.addInfo = addInfo
+		elif type(addInfo) is str or unicode:
+			addInfo = addInfo.split('|')
+			self.addInfo = addInfo
+		else:
+			print "Type error, current type is " + type(addInfo)
+			self.addInfo = None
+
+
