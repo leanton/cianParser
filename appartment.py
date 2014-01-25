@@ -2,20 +2,22 @@
 # -*- coding: utf-8 -*-
 import re
 
+COST_AUTO = 5
+
 class Appartment(object):
 	"""Appartment class consists of features that have all appartments"""
 	def __init__(self, address, metro, transportation, rooms, space, price, floor, addInfo):
 		super(Appartment, self).__init__()
 
-		self.address = self.setAddress(self, address)
-		self.metro = self.setMetro(self, metro)
-		self.transportation = self.setTransportation(self, transportation)
-		self.rooms = self.setRooms(self, rooms)
-		self.space = self.setSpace(self, space)
-		self.price = self.setPrice(self, price)
-		self.floor = self.setFloor(self, floor)
-		self.addInfo = self.setAddInfo(self, addInfo)
-	
+		self.address = self.setAddress(address)
+		self.metro = self.setMetro(metro)
+		self.transportation = self.setTransportation(transportation)
+		self.rooms = self.setRooms(rooms)
+		self.space = self.setSpace(space)
+		self.price = self.setPrice(price)
+		self.floor = self.setFloor(floor)
+		self.addInfo = self.setAddInfo(addInfo)
+
 	# Getter methods
 
 	def getAddress(self):
@@ -45,23 +47,25 @@ class Appartment(object):
 	# Setter methods
 
 	def setAddress(self, address):
-		if type(address) is str or unicode:
+		if (type(address) is str) or (type(address) is unicode):
 			self.address = address
 		else:
 			print "Can't set proper address, type is not string"
 			self.address = None
+		return self.address
 
 	def setMetro(self, metro):
-		if type(metro) is str or unicode:
+		if (type(metro) is str) or (type(metro) is unicode):
 			self.metro = metro
 		else:
 			print "Can't set metro, type is not string"
 			self.metro = None
+		return self.metro
 
 	def setTransportation(self, transportation):
 		if type(transportation) is dict:
 			self.transportation = transportation
-		elif type(transportation) is str or unicode:
+		elif (type(transportation) is str) or (type(transportation) is unicode):
 			time = re.search(u'\d+', transportation)
 			auto = re.search(u'авто', transportation)
 			foot = re.search(u'пешком', transportation)
@@ -77,11 +81,12 @@ class Appartment(object):
 				self.transportation = d
 			else:
 				self.transportation = None
+			return self.transportation
 
 	def setRooms(self, rooms):
 		if type(rooms) is int:
 			self.rooms = rooms
-		elif type(rooms) is str or unicode:
+		elif (type(rooms) is str) or (type(rooms) is unicode):
 			room = re.search(u'\d', rooms)
 			if room:
 				room = int(room.group())
@@ -92,6 +97,7 @@ class Appartment(object):
 		else:
 			print "type error, current type is " + type(rooms)
 			self.rooms = None
+		return self.rooms
 
 	def setSpace(self, space):
 		if type(space) is dict:
@@ -115,14 +121,17 @@ class Appartment(object):
 					pass
 				else:
 					print "Error, no matching typo's. Current typo is " + typo
+			self.space = d
 		else:
 			print "Error with setting space"
 			self.space = None
+		return self.space
 
 	def setPrice(self, price):
-		if type(price) is int or float:
+		if (type(price) is int) or (type(price) is float):
+			print "type is " + str(type(price))
 			self.price = int(price)
-		elif type(price) is str or unicode:
+		elif (type(price) is str) or (type(price) is unicode):
 			price.replace(",", "")
 			price = re.search(u'\d+', price)
 			if price:
@@ -131,13 +140,14 @@ class Appartment(object):
 				print "No match of price in string"
 				self.price = None
 		else:
-			print "Type error, current type is " + type(price)
+			print "Type error, current type is " + str(type(price))
 			self.price = None
+		return self.price
 
 	def setFloor(self, floor):
 		if type(floor) is tuple:
 			self.floor = floor
-		elif type(floor) is str or unicode:
+		elif (type(floor) is str) or (type(floor) is unicode):
 			floor = floor.split("/")
 			if len(floor) == 2:	
 				floor = (int(floor[0]), int(floor[1]))
@@ -148,15 +158,56 @@ class Appartment(object):
 		else:
 			print "Type error, current type is " + type(floor)
 			self.floor = None
+		return self.floor
 
 	def setAddInfo(self, addInfo):
 		if type(addInfo) is list:
 			self.addInfo = addInfo
-		elif type(addInfo) is str or unicode:
+		elif (type(addInfo) is str) or (type(addInfo) is unicode):
 			addInfo = addInfo.split('|')
 			self.addInfo = addInfo
 		else:
 			print "Type error, current type is " + type(addInfo)
 			self.addInfo = None
+		return self.addInfo
+
+	# Helper methods to preprocess data
+	def preprocessData1(self):
+		line = []
+		address = self.address
+		if address:
+			line.append(address)
+		metro = self.metro
+		if metro:
+			line.append(metro)
+		transportation = self.transportation
+		if transportation:
+			if 'auto' in transportation:
+				line.append(str(COST_AUTO*transportation['auto']))
+			elif 'foot' in transportation:
+				line.append(str(transportation['foot']))
+			else:
+				print "no line about transportation"
+		rooms = self.rooms
+		if rooms:
+			line.append(str(rooms))
+		space = self.space
+		if space:
+			if 'kitchen' in space:
+				line.append(str(space['kitchen']))
+			if 'dwelling' in space:
+				line.append(str(space['dwelling']))
+			if 'full' in space:
+				line.append(str(space['full']))
+		price = self.price
+		if price:
+			line.append(str(price))
+		floor = self.floor
+		if floor:
+			num = round(float(floor[0])/float(floor[1]), 2)
+			line.append(str(num))
+		return line
+
+
 
 

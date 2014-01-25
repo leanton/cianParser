@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import re
+from appartment import Appartment
 
 def testTransportation(transportation):
 	if type(transportation) is str or unicode:
@@ -37,8 +38,24 @@ def testRooms(rooms):
 		return None
 
 
+def testAppartment():
+	string = u"Москва, Новосибирская улица, д.6к1, 	м.Щелковская	15мин. пешком	1-комн. квартира	кухня: 6	жилая: 35	общая: 35	35,000р.	1/9	кух.мебель|жил.мебель|телефон|ТВ|стир.машина|холодильник|можно с животными|можно с детьми"
+	array = string.split("	")
+	print repr(array).decode("unicode-escape")
+	address = array[0]
+	metro = array[1]
+	transportation = array[2]
+	rooms = array[3]
+	space = [array[4], array[5], array[6]]
+	price = array[7]
+	floor = array[8]
+	addInfo = array[9]
+	appartment = Appartment(address, metro, transportation, rooms, space, price, floor, addInfo)
+	print appartment
+	print appartment.getAddress()
+	print appartment.getPrice()
 
 
-
-print testTransportation(u"32мин. пешком")
-print testRooms(u"1-комн. квартира")
+#print testTransportation(u"32мин. пешком")
+#print testRooms(u"1-комн. квартира")
+testAppartment()
