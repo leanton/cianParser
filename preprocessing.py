@@ -11,9 +11,13 @@ def preprocessData1(filename_input, filename_output="foo.txt"):
 	new_data = []
 	for line in f:
 		appartment = parseLine(line)
-		new_line = appartment.preprocessData1
+		new_line = appartment.preprocessData1()
 		if len(new_line) == 9:
-			
+			new_line = u'	'.join(new_line)
+			f_out.write(new_line)
+			f_out.write(u'\n')
+	f.close()
+	f_out.close()	
 
 
 
@@ -29,10 +33,10 @@ def parseLine(line):
 	floor = array[8]
 	addInfo = array[9]
 	appartment = Appartment(address, metro, transportation, rooms, space, price, floor, addInfo)
-	print appartment
-	#print appartment.getAddress()
-	#print appartment.getPrice()
 	return appartment
 
 if __name__ == "__main__":
-	appartments = []
+	filename_input = str(sys.argv[1])
+	filename_output = str(sys.argv[2])
+	preprocessData1(filename_input, filename_output)
+	print "Done"

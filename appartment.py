@@ -132,10 +132,9 @@ class Appartment(object):
 			print "type is " + str(type(price))
 			self.price = int(price)
 		elif (type(price) is str) or (type(price) is unicode):
-			price.replace(",", "")
-			price = re.search(u'\d+', price)
+			price = re.search(u'^\d+', price)
 			if price:
-				self.price = int(price.group())
+				self.price = int(price.group())*1000
 			else:
 				print "No match of price in string"
 				self.price = None
