@@ -117,7 +117,7 @@ class Appartment(object):
 					area = re.search(u'\d+', typo)
 					area = int(area.group())
 					d['full'] = area
-				elif typo == NULL:
+				elif typo == "NULL":
 					pass
 				else:
 					print "Error, no matching typo's. Current typo is " + typo
@@ -132,9 +132,10 @@ class Appartment(object):
 			print "type is " + str(type(price))
 			self.price = int(price)
 		elif (type(price) is str) or (type(price) is unicode):
+			price = price.replace(u',', '')
 			price = re.search(u'^\d+', price)
 			if price:
-				self.price = int(price.group())*1000
+				self.price = int(price.group())
 			else:
 				print "No match of price in string"
 				self.price = None
@@ -202,7 +203,7 @@ class Appartment(object):
 		if price:
 			line.append(str(price))
 		floor = self.floor
-		if floor:
+		if floor and floor[1]!=0:
 			num = round(float(floor[0])/float(floor[1]), 2)
 			line.append(str(num))
 		return line
